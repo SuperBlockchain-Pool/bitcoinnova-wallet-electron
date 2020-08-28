@@ -46,7 +46,6 @@ jobs:
         run: |
           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
           rm -rf ./dist/*.blockmap
-          rm -rf ./dist/*.zip
           rm -rf ./dist/*-unpacked
           rm -rf ./dist/*.plist
           rm -rf ./dist/mac
