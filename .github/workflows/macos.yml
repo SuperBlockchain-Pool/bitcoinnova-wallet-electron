@@ -1,4 +1,4 @@
-name: BitcoinNova Electronic Wallet - Build MacOS
+name: BitcoinNova Electron Wallet - Build MacOS
 on:
   push:
   pull_request:
