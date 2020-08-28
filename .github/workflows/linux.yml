@@ -1,77 +1,60 @@
-name: Build WrkzWalletShell
+name: BitcoinNova Electron Wallet - Build Linux
 on:
   push:
   pull_request:
   release:
     types: [published]
+  schedule:
+    - cron: '30 3 * * 0'
+    
+env:
+  TAG: ${{ github.ref }}
 
 jobs:
   build:
-    name: ${{ matrix.target }} Build
+    name:  Build - ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         target:
-          [
-            x86_64-pc-windows-msvc,
-            x86_64-apple-darwin,
-            x86_64-unknown-linux-gnu,
-          ]
+          [Linux]
         include:
-          - target: x86_64-pc-windows-msvc
-            os: windows-latest
-          - target: x86_64-apple-darwin
-            os: macos-latest
-          - target: x86_64-unknown-linux-gnu
+          - target: Linux
             os: ubuntu-latest
-
+          
     steps:
-      - uses: actions/checkout@v2
-
+      - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
           node-version: '10.x'
 
-      - name: Setup MSBuild.exe
-        if: matrix.os == 'windows-latest'
-        uses: warrenbuckley/Setup-MSBuild@v1
-
-      - name: Setup Cache
-        uses: actions/cache@v1
-        with:
-          path: node_modules
-          key: ${{ matrix.os }}-deps
-
       - name: Dependencies
         run: yarn
 
-      - name: Build for Windows
-        if: matrix.target == 'x86_64-pc-windows-msvc'
-        run: |
-          yarn dist-win
-      - name: Build for MacOS
-        if: matrix.target == 'x86_64-apple-darwin'
-        run: |
-          chmod +x ./bin/osx/Bitcoinnova-service
-          yarn dist-mac
       - name: Build for Linux
-        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        if: matrix.target == 'Linux'
         run: |
           chmod +x ./bin/lin/Bitcoinnova-service
           yarn dist-lin
+          
       - name: Prepare to Deploy
         id: before_deploy
         shell: bash
+        env:
+          COMMIT_SHA: ${{ github.sha }}
         run: |
+          if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
           rm -rf ./dist/*.blockmap
           rm -rf ./dist/*.zip
           rm -rf ./dist/*-unpacked
           rm -rf ./dist/mac
-          export NAME=$(ls dist/Electron Wallet-*)
-          echo ::set-output name=file_name::${NAME:5}
-          
-          # Upload to GH Actions Artifacts
+          cd dist
+          tar cvfz BitcoinNova-Electron-Wallet-${TAG}-${{ matrix.target }}.tar.gz *.*
+          echo ::set-output name=artifact_name::BitcoinNova-Electron-Wallet-${TAG}-${{ matrix.target }}.tar.gz
+          echo ::set-output name=file_name::BitcoinNova-Electron-Wallet-${TAG}-${{ matrix.target }}.tar.gz
+                    
+       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v1.0.0
         with:
