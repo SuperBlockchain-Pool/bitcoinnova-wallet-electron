@@ -49,6 +49,7 @@ jobs:
           rm -rf ./dist/*.zip
           rm -rf ./dist/*-unpacked
           rm -rf ./dist/mac
+          rm -rf ./dist/*.yml
           cd dist
           tar cvfz BitcoinNova-Electron-Wallet-${TAG}-${{ matrix.target }}.tar.gz *.*
           echo ::set-output name=artifact_name::BitcoinNova-Electron-Wallet-${TAG}-${{ matrix.target }}.tar.gz
