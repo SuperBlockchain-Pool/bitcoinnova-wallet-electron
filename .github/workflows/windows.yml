@@ -50,6 +50,7 @@ jobs:
           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
           cd dist
           rm *.blockmap
+          rm *.yml
           7z a BitcoinNova-Electron-Wallet-${TAG}-${{ matrix.target }}.zip *.*
           echo ::set-output name=artifact_name::BitcoinNova-Electron-Wallet-${TAG}-${{ matrix.target }}.zip
           echo ::set-output name=file_name::BitcoinNova-Electron-Wallet-${TAG}-${{ matrix.target }}.zip
