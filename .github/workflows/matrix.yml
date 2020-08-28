@@ -30,7 +30,7 @@ jobs:
           node-version: '10.x'
 
       - name: Dependencies
-        run: yarn
+        run: yarn install
 
       - name: Build for Linux
         if: matrix.target == 'Linux'
